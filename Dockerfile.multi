@@ -1,0 +1,25 @@
+# === Stage 1: 編譯階段 ===
+# 使用 SDK 映像來編譯程式碼，命名為 "build"
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# 設定編譯用的工作目錄
+WORKDIR /src
+
+# 將本機的專案檔案複製到容器內
+COPY src/DockerfileDemo/ .
+
+# 編譯專案，輸出到 /app 目錄
+RUN dotnet publish -c Release -o /app
+
+# === Stage 2: 執行階段 ===
+# 換成只有 runtime 的輕量映像（不含 SDK）
+FROM mcr.microsoft.com/dotnet/runtime:8.0
+
+# 設定執行用的工作目錄
+WORKDIR /app
+
+# 從 build 階段複製編譯好的檔案過來
+COPY --from=build /app .
+
+# 設定容器啟動時執行的指令
+ENTRYPOINT ["dotnet", "DockerfileDemo.dll"]

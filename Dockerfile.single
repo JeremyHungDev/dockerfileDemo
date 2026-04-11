@@ -1,0 +1,14 @@
+# 使用 .NET 8 SDK 作為基底映像（包含編譯器和執行環境）
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+# 設定容器內的工作目錄
+WORKDIR /app
+
+# 將本機的專案檔案複製到容器內
+COPY src/DockerfileDemo/ .
+
+# 編譯專案，輸出到 /out 目錄
+RUN dotnet publish -c Release -o /out
+
+# 設定容器啟動時執行的指令
+ENTRYPOINT ["dotnet", "/out/DockerfileDemo.dll"]
